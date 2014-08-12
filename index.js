@@ -43,10 +43,40 @@ var server = http.createServer(function (request, response) {
 		}
 	});
 	
-}).listen(3000);
+});
 
 var io = require('socket.io').listen(server);
 
+var players = [];
+
 io.on('connection', function(socket){
   console.log('a user connected');
+  players.push(socket);
+  console.log(players.length);
+  io.sockets.emit ('updatePlayer', players.length);
+
+  //Radius aller Boids
+  socket.on('radius', function(r){
+	//console.log('Radius: ' + r);
+  });
+
+  socket.on ('Update', function () {
+    io.sockets.emit ('updateBoids', players.length);
+  });
+
+  socket.on('disconnect', function() {
+      console.log('Got disconnect!');
+      var i = players.indexOf(socket);
+      delete players[i];
+      console.log(players.length);
+      });
 });
+
+server.listen(3000, function(){
+  console.log('listening on *:3000');
+});
+
+
+
+
+

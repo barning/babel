@@ -1,15 +1,11 @@
+
 var boids = [];
 
 
 function setup() {
-var myCanvas = createCanvas(500, 500);
-  myCanvas.parent('processing');
-
-
-  // Add an initial set of boids into the system
-  for (var i = 0; i < 5; i++) {
-    boids[i] = new Boid(random(width), random(height));
-  }  
+  createCanvas(windowWidth, windowHeight);
+playerCount ();
+boidCounter();
 
 }
 
@@ -17,8 +13,8 @@ function draw() {
   background(255);
   fill(100);
   for (var i = 0; i < boids.length; i++) {
-      boids[i].run(boids);
-    }
+    boids[i].run(boids);
+  }
 }
 
 //CLass
@@ -32,23 +28,39 @@ function Boid(x, y) {
     // start the Audio Input.
     // By default, it does not .connect() (to the computer speakers)
     mic.start();
-}
+  }
 
-Boid.prototype.run = function(boids) {
-  this.render();
-}
+  Boid.prototype.run = function(boids) {
+    this.render();
+  }
 
-Boid.prototype.render = function() {
+  Boid.prototype.render = function() {
 
   // Get the overall volume (between 0 and 1.0)
   var vol = mic.getLevel();
+  var r = constrain(50-vol*50*5, 0, 50);
   // Draw an ellipse with height based on volume
 
   fill(50);
   noStroke();
   ellipseMode(CENTER);
-  ellipse(this.position.x, this.position.y, constrain(50-vol*50*5, 0, 50), constrain(50-vol*50*5, 0, 50));
-};
+
+  ellipse(this.position.x, this.position.y,r,r);
+  socket.emit('radius', r);
+}
+
+function playerCount (){
+  socket.emit ('Update');
+}
+
+function boidCounter(){
+  socket.on ('updateBoids', function (msg) {
+    for (var i = 0; i < msg; i++) {
+      boids[i] = new Boid(random(width), random(height));
+    } 
+  });
+}
+
 
 
 
