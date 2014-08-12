@@ -48,15 +48,7 @@ Boid.prototype.render = function() {
   noStroke();
   ellipseMode(CENTER);
   ellipse(this.position.x, this.position.y, constrain(50-vol*50*5, 0, 50), constrain(50-vol*50*5, 0, 50));
-}
-
-
-
-});
-
-http.listen(3000, function(){
-  console.log('listening on *:3000');
-});
+};
 
 
 
