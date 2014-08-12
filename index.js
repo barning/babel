@@ -1,4 +1,7 @@
 var app = require('express')();
+var sound = require('./js/p5.js');
+var sound = require('./js/sound.js');
+var boid = require('./js/sketch.js');
 var http = require('http').Server(app);
 
 app.get('/', function(req, res){
