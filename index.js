@@ -1,9 +1,13 @@
 var http = require('http');
 var fs = require('fs');
 var path = require('path');
-http.createServer(function (request, response) {
+var app = require('express')();
+//var http = require('http').Server(app);
+
+
+//Index
+var server = http.createServer(function (request, response) {
     console.log('request starting...');
-	
 	var filePath = '.' + request.url;
 	if (filePath == './')
 		filePath = './index.html';
@@ -40,3 +44,5 @@ http.createServer(function (request, response) {
 	});
 	
 }).listen(3000);
+
+var io = require('socket.io').listen(server);
