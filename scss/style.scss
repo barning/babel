@@ -1,0 +1,17 @@
+
+@import "lib/bourbon/bourbon";
+@import "lib/colors";
+@import "lib/mixins";
+@import "lib/fonts";
+
+
+* {
+	padding: 0;
+	margin: 0;
+}
+
+#processing {
+	max-width: 500px;
+	width: 100%;
+	@include middle;
+}
