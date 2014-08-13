@@ -12,6 +12,7 @@ boidCounter();
 function draw() {
   background(255);
   fill(100);
+  updateBoid();
   for (var i = 0; i < boids.length; i++) {
     boids[i].run(boids);
   }
