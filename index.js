@@ -75,6 +75,7 @@ Player.prototype.isReady = function () {
 
 io.sockets.on('connection', function (socket) {
   connections.push(socket);
+  player = new Player(data.name, data.email, socket)
   io.sockets.emit ('updatePlayer', connections.length);
 
   //Radius aller Boids
@@ -88,6 +89,7 @@ io.sockets.on('connection', function (socket) {
 
   socket.on('disconnect', function () {
     removeConnectionById(socket.id);
+    removePlayerBySocketId(socket.id)
     console.log("disconnect " + socket.id );
     console.log(connections.length);
   });
