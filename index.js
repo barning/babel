@@ -53,6 +53,9 @@ var connections = [];
 function Player(socket) {
   this.socket = socket;
   this.state = 'ready';
+
+  this.xpos = 0;
+  this.ypos = 0;
 }
 
 
@@ -77,13 +80,16 @@ io.sockets.on('connection', function (socket) {
   connections.push(socket);
   io.sockets.emit ('updatePlayer', connections.length);
 
+  console.log("Connect " + socket.id );
+
   //Radius aller Boids
   socket.on('radius', function(r){
-	//console.log('Radius: ' + r);
+	console.log('Radius: ' + r);
   });
 
   socket.on ('Update', function () {
-    io.sockets.emit ('updateBoids', connections.length);
+    var id = getSocketNrById(socket.id)
+    io.sockets.emit ('updateBoids',{ connections: connections.length, name: id });
   });
 
   socket.on('disconnect', function () {
@@ -102,6 +108,7 @@ io.sockets.on('connection', function (socket) {
       console.log("player is already registered with socket " + player.socket.id)
     }
 });
+
 
 var removePlayerBySocketId = function(id) {
   var pNr = getPlayerNrById(id);

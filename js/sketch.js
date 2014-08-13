@@ -19,10 +19,11 @@ function draw() {
 }
 
 //CLass
-function Boid(x, y) {
+function Boid(x, y,id) {
   this.position = createVector(x, y);
   var input;
   var analyzer;
+  var name =id;
     // Create an Audio input
     mic = new p5.AudioIn();
 
@@ -55,9 +56,13 @@ function playerCount (){
 }
 
 function boidCounter(){
-  socket.on ('updateBoids', function (msg) {
-    for (var i = 0; i < msg; i++) {
-      boids[i] = new Boid(random(width), random(height));
+  socket.on ('updateBoids', function (data) {
+
+    var length = data.connections;
+    var id = data.name;
+    console.log('id ist'+id);
+    for (var i = 0; i < length; i++) {
+      boids[i] = new Boid(random(width), random(height),id);
     } 
   });
 }
