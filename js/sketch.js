@@ -12,6 +12,7 @@ boidCounter();
 function draw() {
   background(255);
   fill(100);
+  updateBoid();
   for (var i = 0; i < boids.length; i++) {
     boids[i].run(boids);
   }
@@ -58,6 +59,12 @@ function boidCounter(){
     for (var i = 0; i < msg; i++) {
       boids[i] = new Boid(random(width), random(height));
     } 
+  });
+}
+
+function updateBoid(){
+  socket.on ('deletePlayer', function (msg) {
+    boids.splice(msg,1);
   });
 }
 
