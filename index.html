@@ -7,18 +7,103 @@
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width">
 	<link rel="stylesheet" href="css/style.css">
-    <script src="js/p5.js"></script>
-    <script src="js/sketch.js"></script>
-    <script src="js/sound.js"></script>
+	<script src="js/p5.js"></script>
+	<script src="js/sketch.js"></script>
+	<script src="js/sound.js"></script>
 
 </head>
 <body>
-    <div id="processing">
-    </div>
+	<div id="processing">
+	</div>
 
-    <script src="socket.io/socket.io.js"></script>
+	<script src="socket.io/socket.io.js"></script>
 	<script>
-  		var socket = io();
-	</script>    
+	var socket = io();
+	var boids = [];
+	var input;
+	var analyzer;
+
+function setup() {
+  // Create an Audio input
+  mic = new p5.AudioIn();
+  // start the Audio Input.
+  // By default, it does not .connect() (to the computer speakers)
+  mic.start();  
+  createCanvas(windowWidth, windowHeight);
+  //playerCount ();
+  boidCounter();
+
+
+}
+
+function draw() {
+	background(255);
+	fill(100);
+	updateBoid();
+	for (var i = 0; i < boids.length; i++) {
+		boids[i].run(boids);
+	}
+}
+
+//CLass
+function Boid(x, y,number) {
+	this.position = createVector(x, y);
+	this.mynumber = number;
+	this.r = 0;
+	this.color=color(0,0,0);
+}
+
+Boid.prototype.run = function(boids) {
+	this.render();
+}
+
+Boid.prototype.render = function() {
+	socket.emit ('who',this.mynumber);
+  // Get the overall volume (between 0 and 1.0)
+  var vol = mic.getLevel();
+  this.r = constrain(50-vol*50*5, 0, 50);
+  // Draw an ellipse with height based on volume
+  //console.log('Mein Zahl ist '+this.mynumber);
+  noStroke();
+  fill(this.color);
+  ellipseMode(CENTER);
+  text("I'm "+this.mynumber , this.position.x+60, this.position.y); 
+  ellipse(this.position.x, this.position.y,this.r,this.r);
+  //socket.emit('radius', name);
+}
+
+function playerCount (){
+	socket.emit ('Update');
+}
+
+function boidCounter(){
+	socket.on ('updateBoids', function (msg) {
+		var length = msg;
+		for (var i = 0; i < length; i++) {
+			boids[i] = new Boid(0,0,i );
+		} 
+	});
+}
+
+function updateBoid(){
+	socket.on ('deletePlayer', function (msg) {
+		boids.splice(msg,1);
+	});
+}
+
+socket.on ('youare', function (data) {
+	tempx = data.posX;
+	tempy = data.posY;
+	tempMynumber = data.name;
+	r = data.tempr;
+	g = data.tempg;
+	b = data.tempb;
+	var boid = boids[tempMynumber];
+	boid.position.x = tempx;
+	boid.position.y = tempy;
+	boid.color = color(r,g,b);
+
+});
+</script>    
 </body>
 </html>
