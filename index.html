@@ -18,10 +18,11 @@
 
 	<script src="socket.io/socket.io.js"></script>
 	<script>
-	var socket = io();
-	var boids = [];
-	var input;
-	var analyzer;
+
+var socket = io();
+var boids = [];
+var input;
+var analyzer;
 
 function setup() {
   // Create an Audio input
@@ -39,6 +40,7 @@ function setup() {
 function draw() {
 	background(255);
 	fill(100);
+	getSound();
 	updateBoid();
 	for (var i = 0; i < boids.length; i++) {
 		boids[i].run(boids);
@@ -60,8 +62,6 @@ Boid.prototype.run = function(boids) {
 Boid.prototype.render = function() {
 	socket.emit ('who',this.mynumber);
   // Get the overall volume (between 0 and 1.0)
-  var vol = mic.getLevel();
-  this.r = constrain(50-vol*50*5, 0, 50);
   // Draw an ellipse with height based on volume
   //console.log('Mein Zahl ist '+this.mynumber);
   noStroke();
@@ -90,6 +90,19 @@ function updateBoid(){
 		boids.splice(msg,1);
 	});
 }
+
+function getSound(){
+	var vol = mic.getLevel();
+	var r = constrain(50-vol*50*5, 0, 50);
+	socket.emit ('mySound', r);
+}
+
+socket.on ('sendSound', function (data) {
+	var tempName = data.name;
+	var tempSound = data.sound;
+	var theboidforsound = boids[tempName];
+	theboidforsound.r = tempSound;
+});
 
 socket.on ('youare', function (data) {
 	tempx = data.posX;

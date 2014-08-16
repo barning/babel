@@ -59,6 +59,8 @@ function Player(socket) {
   this.r = Math.floor(Math.random() * 255) + 10;
   this.g = Math.floor(Math.random() * 255) + 10;
   this.b = Math.floor(Math.random() * 255) + 10;
+
+  this.mySound = 0;
 }
 
 
@@ -91,8 +93,7 @@ io.sockets.on('connection', function (socket) {
 
   socket.on('disconnect', function () {
     var id = getSocketNrById(socket.id)
-    //players.splice(id,1);
-    //console.log('Leaver is '+id);
+
     removeConnectionById(socket.id);
     removePlayerBySocketId(socket.id);
     console.log("disconnect " + socket.id );
@@ -111,6 +112,17 @@ io.sockets.on('connection', function (socket) {
     var green = players[pNr].g;
     var blue = players[pNr].b;
     io.sockets.emit ('youare',{name: pNr, posX: xpos, posY: ypos, tempr: red, tempg: green, tempb: blue});
+  });
+
+  socket.on ('mySound', function (msg) {
+    var pNr = getPlayerNrById(socket.id);
+    var player = players[pNr];
+    for (var i = 0; i < players.length; i++) {
+      if (i==pNr){
+        player.mySound = msg;
+        io.sockets.emit('sendSound',{name: pNr, sound: player.mySound});
+      }
+    } 
   });
 
 
