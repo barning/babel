@@ -60,7 +60,7 @@ function Player(socket) {
   this.g = Math.floor(Math.random() * 255) + 10;
   this.b = Math.floor(Math.random() * 255) + 10;
 
-  this.mySound = 0;
+  this.mySound = 50;
 }
 
 
@@ -112,17 +112,14 @@ io.sockets.on('connection', function (socket) {
     var green = players[pNr].g;
     var blue = players[pNr].b;
     io.sockets.emit ('youare',{name: pNr, posX: xpos, posY: ypos, tempr: red, tempg: green, tempb: blue});
+    //io.sockets.emit('turnoff',pnr);
   });
 
   socket.on ('mySound', function (msg) {
     var pNr = getPlayerNrById(socket.id);
     var player = players[pNr];
-    for (var i = 0; i < players.length; i++) {
-      if (i==pNr){
-        player.mySound = msg;
-        io.sockets.emit('sendSound',{name: pNr, sound: player.mySound});
-      }
-    } 
+    player.mySound = msg;
+    io.sockets.emit('mylevel',{name: pNr, level: player.mySound});
   });
 
 

@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-	<title>Barning.org</title>
+	<title>Babel</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width">
 	<link rel="stylesheet" href="css/style.css">
@@ -51,8 +51,10 @@ function draw() {
 function Boid(x, y,number) {
 	this.position = createVector(x, y);
 	this.mynumber = number;
-	this.r = 0;
+	this.r = 50;
 	this.color=color(0,0,0);
+	this.osc = new p5.Oscillator(500);
+	this.osc.start();
 }
 
 Boid.prototype.run = function(boids) {
@@ -60,16 +62,19 @@ Boid.prototype.run = function(boids) {
 }
 
 Boid.prototype.render = function() {
-	socket.emit ('who',this.mynumber);
-  // Get the overall volume (between 0 and 1.0)
-  // Draw an ellipse with height based on volume
-  //console.log('Mein Zahl ist '+this.mynumber);
+  socket.emit ('who',this.mynumber);
   noStroke();
   fill(this.color);
   ellipseMode(CENTER);
   text("I'm "+this.mynumber , this.position.x+60, this.position.y); 
   ellipse(this.position.x, this.position.y,this.r,this.r);
-  //socket.emit('radius', name);
+  var loudness = map(this.r,30,50,800,1)
+  if (loudness >790) {
+  	loudness = 5;
+  }
+
+  this.osc.freq(loudness);
+
 }
 
 function playerCount (){
@@ -97,9 +102,9 @@ function getSound(){
 	socket.emit ('mySound', r);
 }
 
-socket.on ('sendSound', function (data) {
+socket.on ('mylevel', function (data) {
 	var tempName = data.name;
-	var tempSound = data.sound;
+	var tempSound = data.level;
 	var theboidforsound = boids[tempName];
 	theboidforsound.r = tempSound;
 });
@@ -115,8 +120,9 @@ socket.on ('youare', function (data) {
 	boid.position.x = tempx;
 	boid.position.y = tempy;
 	boid.color = color(r,g,b);
-
 });
+
+
 </script>    
 </body>
 </html>
