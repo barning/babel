@@ -8,14 +8,18 @@
 	<meta name="viewport" content="width=device-width">
 	<link rel="stylesheet" href="css/style.css">
 	<script src="js/p5.js"></script>
-	<script src="js/sketch.js"></script>
 	<script src="js/sound.js"></script>
 
 </head>
 <body>
 	<div id="processing">
 	</div>
-
+	<a href="https://github.com/barning/babel"><img style="background: transparent;position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/52760788cde945287fbb584134c4cbc2bc36f904/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f77686974655f6666666666662e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png"></a>
+	<p class="info">
+		Please put on your headphones!<br>
+		Music: <a href="https://soundcloud.com/pascal-seul">Pascal Seul</a><br>
+		Code & Design: <a href="http://www.niklasbarning.de">Niklas Barning</a>
+	</p>
 	<script src="socket.io/socket.io.js"></script>
 	<script>
 
@@ -24,27 +28,43 @@ var boids = [];
 var input;
 var analyzer;
 
+
+function preload(){
+	boidCounter();
+	mySound = loadSound('audio/rats.mp3');
+}
+
 function setup() {
   // Create an Audio input
+  for (var i = 0; i < boids.length; i++) {		
+	boids[i].osc.start();
+} 
   mic = new p5.AudioIn();
-  // start the Audio Input.
-  // By default, it does not .connect() (to the computer speakers)
-  mic.start();  
-  createCanvas(windowWidth, windowHeight);
-  //playerCount ();
+  mic.start();
+  mySound.loop();
+  mySound.setVolume(0.1);
+
+  var myCanvas = createCanvas(windowWidth, windowHeight);
+  myCanvas.parent('processing');
+  var _docHeight = (document.height !== undefined) ? document.height : document.body.offsetHeight;
+  var _docWidth = (document.width !== undefined) ? document.width : document.body.offsetWidth;
+  var h = windowHeight;
+  socket.emit ('mySize',{mywidth: _docWidth, myheight: _docHeight});
   boidCounter();
-
-
 }
 
 function draw() {
-	background(255);
+	background(44, 62, 80,50);
 	fill(100);
-	getSound();
 	updateBoid();
+	textAlign(CENTER);
+	fill(255);
+	noStroke();
+	
 	for (var i = 0; i < boids.length; i++) {
 		boids[i].run(boids);
 	}
+	getSound();
 }
 
 //CLass
@@ -54,7 +74,9 @@ function Boid(x, y,number) {
 	this.r = 50;
 	this.color=color(0,0,0);
 	this.osc = new p5.Oscillator(500);
-	this.osc.start();
+	// Create a reverb input
+  	this.reverb = new p5.Reverb();
+  	this.reverb.process(this.osc, 6, 5);
 }
 
 Boid.prototype.run = function(boids) {
@@ -63,13 +85,15 @@ Boid.prototype.run = function(boids) {
 
 Boid.prototype.render = function() {
   socket.emit ('who',this.mynumber);
-  noStroke();
   fill(this.color);
   ellipseMode(CENTER);
-  text("I'm "+this.mynumber , this.position.x+60, this.position.y); 
+  //text("I'm "+this.mynumber , this.position.x+60, this.position.y); 
   ellipse(this.position.x, this.position.y,this.r,this.r);
-  var loudness = map(this.r,30,50,800,1)
-  if (loudness >790) {
+  
+  var loudness = map(this.r,30,80,900,1);
+  var panning = map(this.position.x,0,width,-1,1);
+  this.osc.pan(panning);
+  if (loudness >890) {
   	loudness = 5;
   }
 
@@ -86,6 +110,8 @@ function boidCounter(){
 		var length = msg;
 		for (var i = 0; i < length; i++) {
 			boids[i] = new Boid(0,0,i );
+			//boids[i].osc.start();
+			boids[i].osc.amp(0.2);
 		} 
 	});
 }
@@ -98,7 +124,7 @@ function updateBoid(){
 
 function getSound(){
 	var vol = mic.getLevel();
-	var r = constrain(50-vol*50*5, 0, 50);
+	var r = constrain(80-vol*80*5, 0, 80);
 	socket.emit ('mySound', r);
 }
 
@@ -121,8 +147,6 @@ socket.on ('youare', function (data) {
 	boid.position.y = tempy;
 	boid.color = color(r,g,b);
 });
-
-
 </script>    
 </body>
 </html>

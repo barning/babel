@@ -7,7 +7,7 @@ var app = require('express')();
 
 //Index
 var server = http.createServer(function (request, response) {
-  console.log('request starting...');
+  //console.log('request starting...');
   var filePath = '.' + request.url;
   if (filePath == './')
     filePath = './index.html';
@@ -49,35 +49,20 @@ var io = require('socket.io').listen(server);
 
 var players = [];
 var connections = [];
+var w =0;
+var h =0;
 
 function Player(socket) {
   this.socket = socket;
   this.state = 'ready';
 
-  this.xpos = Math.floor(Math.random() * 500) + 1;
-  this.ypos = Math.floor(Math.random() * 500) + 1;
-  this.r = Math.floor(Math.random() * 255) + 10;
-  this.g = Math.floor(Math.random() * 255) + 10;
-  this.b = Math.floor(Math.random() * 255) + 10;
+  this.xpos = Math.floor(Math.random() * w)+50;
+  this.ypos = Math.floor(Math.random() * h) + 50;
+  this.r = Math.floor(Math.random() * 255) + 100;
+  this.g = Math.floor(Math.random() * 255) + 100;
+  this.b = Math.floor(Math.random() * 255) + 100;
 
-  this.mySound = 50;
-}
-
-
-Player.prototype.setReady = function () {
-  this.state = 'ready';
-}
-
-Player.prototype.setPlaying = function () {
-  this.state = 'playing';
-}
-
-Player.prototype.setUnready = function () {
-  this.state = 'unready';
-}
-
-Player.prototype.isReady = function () {
-  return this.state === 'ready';
+  this.mySound = 0;
 }
 
 
@@ -85,20 +70,22 @@ io.sockets.on('connection', function (socket) {
   connections.push(socket);
   io.sockets.emit ('updateBoids', connections.length);
 
-  //console.log("Connect " + socket.id );
+  console.log("Connect " + socket.id );
 
   player = new Player(socket);
   players.push(player);
-  console.log("socket " + player.socket.id);
+  console.log('We have now '+connections.length+' Connections and ' + players.length + ' Players');
 
   socket.on('disconnect', function () {
     var id = getSocketNrById(socket.id)
+    console.log(socket.id + 'leaved' );
 
     removeConnectionById(socket.id);
     removePlayerBySocketId(socket.id);
+
     console.log("disconnect " + socket.id );
-    console.log(connections.length);
-    console.log(players.length);
+    console.log('We have now '+connections.length+' Connections and ' + players.length + ' Players');
+
     io.sockets.emit ('deletePlayer');
     io.sockets.emit ('updateBoids', connections.length);
   });
@@ -111,8 +98,15 @@ io.sockets.on('connection', function (socket) {
     var red = players[pNr].r;
     var green = players[pNr].g;
     var blue = players[pNr].b;
+
     io.sockets.emit ('youare',{name: pNr, posX: xpos, posY: ypos, tempr: red, tempg: green, tempb: blue});
-    //io.sockets.emit('turnoff',pnr);
+  });
+
+  socket.on ('mySize', function (data) {
+    var theWidth = data.mywidth;
+    var theHeigth = data.myheight;
+    w = theWidth-200;
+    h = theHeigth-200;
   });
 
   socket.on ('mySound', function (msg) {
@@ -127,8 +121,8 @@ var removePlayerBySocketId = function(id) {
   var pNr = getPlayerNrById(id);
   if (pNr !== undefined) {
     var player = players[pNr];
+    player.mySound = 0;
     players.splice(pNr,1);
-    console.log('Player "' + player.name + '" was removed.');
   }
 }
 
@@ -140,18 +134,8 @@ var removeConnectionById = function(id) {
   }
 }
 
-var getPlayerBySocket = function(socket) {
-  if (socket === undefined) return undefined;
-  return players[getPlayerNrById(socket.id)];
-}
-
-var getPlayerNameBySocket = function(socket) {
-  var pl = getPlayerBySocket(socket);
-  if (pl !== undefined) return pl.name;
-}
 
 var getPlayerNrById = function(id) {
-  //console.log("getPlayerNrById(" + id + ")")
   for (var i = 0; i < players.length; i++) {
     if(id == players[i].socket.id) {
       return i;
@@ -167,9 +151,6 @@ var getSocketNrById = function(id) {
   }
 }
 
-var getSocketById = function(id) {
-  return connections[getSocketNrById(id)];
-}
 });
 server.listen(4897, function(){
   console.log('listening on *:4897');
