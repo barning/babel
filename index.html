@@ -103,6 +103,7 @@ socket.on ('updateBoids', function (msg) {
 
 socket.on ('deletePlayer', function (msg) {
 	boids[i].osc.disconnect();
+	socket.emit ('who',msg);
 	boids.splice(msg,1);
 });
 
