@@ -49,28 +49,26 @@ var io = require('socket.io').listen(server);
 
 var players = [];
 var connections = [];
-var w =0;
-var h =0;
+var w;
+var h;
 
 function Player(socket) {
   this.socket = socket;
-  this.state = 'ready';
 
   this.xpos = Math.floor(Math.random() * w)+50;
-  this.ypos = Math.floor(Math.random() * h) + 50;
+  this.ypos = Math.floor(Math.random() * h) +0;
   this.r = Math.floor(Math.random() * 255) + 100;
   this.g = Math.floor(Math.random() * 255) + 100;
   this.b = Math.floor(Math.random() * 255) + 100;
 
-  this.mySound = 0;
+  this.mySound;
 }
 
 
 io.sockets.on('connection', function (socket) {
   connections.push(socket);
+  io.sockets.emit ('theSize');
   io.sockets.emit ('updateBoids', connections.length);
-
-  console.log("Connect " + socket.id );
 
   player = new Player(socket);
   players.push(player);
@@ -78,12 +76,10 @@ io.sockets.on('connection', function (socket) {
 
   socket.on('disconnect', function () {
     var id = getSocketNrById(socket.id)
-    console.log(socket.id + 'leaved' );
 
     removeConnectionById(socket.id);
     removePlayerBySocketId(socket.id);
 
-    console.log("disconnect " + socket.id );
     console.log('We have now '+connections.length+' Connections and ' + players.length + ' Players');
 
     io.sockets.emit ('deletePlayer');
@@ -105,8 +101,8 @@ io.sockets.on('connection', function (socket) {
   socket.on ('mySize', function (data) {
     var theWidth = data.mywidth;
     var theHeigth = data.myheight;
-    w = theWidth-200;
-    h = theHeigth-200;
+    w = theWidth;
+    h = theHeigth - 50;
   });
 
   socket.on ('mySound', function (msg) {

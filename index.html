@@ -16,7 +16,7 @@
 	</div>
 	<p class="info">
 		Please put on your headphones!<br>
-		Music: <a href="https://soundcloud.com/pascal-seul">Pascal Seul</a><br>
+		<!-- Music: <a href="https://soundcloud.com/pascal-seul">Pascal Seul</a><br> -->
 		Code & Design: <a href="http://www.niklasbarning.de">Niklas Barning</a><br>
 		<a href="https://github.com/barning/babel">Fork me on Github</a>
 	</p>
@@ -28,35 +28,19 @@ var boids = [];
 var input;
 var analyzer;
 
-
-function preload(){
-	boidCounter();
-	mySound = loadSound('audio/rats.mp3');
-}
-
 function setup() {
   // Create an Audio input
-  for (var i = 0; i < boids.length; i++) {		
-	boids[i].osc.start();
-} 
   mic = new p5.AudioIn();
   mic.start();
-  mySound.loop();
-  mySound.setVolume(0.1);
 
   var myCanvas = createCanvas(windowWidth, windowHeight);
   myCanvas.parent('processing');
-  var _docHeight = (document.height !== undefined) ? document.height : document.body.offsetHeight;
-  var _docWidth = (document.width !== undefined) ? document.width : document.body.offsetWidth;
-  var h = windowHeight;
-  socket.emit ('mySize',{mywidth: _docWidth, myheight: _docHeight});
-  boidCounter();
+
 }
 
 function draw() {
 	background(44, 62, 80,50);
 	fill(100);
-	updateBoid();
 	textAlign(CENTER);
 	fill(255);
 	noStroke();
@@ -71,9 +55,12 @@ function draw() {
 function Boid(x, y,number) {
 	this.position = createVector(x, y);
 	this.mynumber = number;
-	this.r = 50;
+	this.r = 0;
 	this.color=color(0,0,0);
 	this.osc = new p5.Oscillator(500);
+	this.osc.start();
+	this.osc.amp(0.2);
+
 	// Create a reverb input
   	this.reverb = new p5.Reverb();
   	this.reverb.process(this.osc, 6, 5);
@@ -84,7 +71,6 @@ Boid.prototype.run = function(boids) {
 }
 
 Boid.prototype.render = function() {
-  socket.emit ('who',this.mynumber);
   fill(this.color);
   ellipseMode(CENTER);
   //text("I'm "+this.mynumber , this.position.x+60, this.position.y); 
@@ -105,22 +91,20 @@ function playerCount (){
 	socket.emit ('Update');
 }
 
-function boidCounter(){
-	socket.on ('updateBoids', function (msg) {
-		var length = msg;
-		for (var i = 0; i < length; i++) {
-			boids[i] = new Boid(0,0,i );
-			//boids[i].osc.start();
-			boids[i].osc.amp(0.2);
-		} 
-	});
-}
 
-function updateBoid(){
-	socket.on ('deletePlayer', function (msg) {
-		boids.splice(msg,1);
-	});
-}
+socket.on ('updateBoids', function (msg) {
+	var length = msg;
+	for (var i = 0; i < length; i++) {
+		boids[i] = new Boid(0,0,i );
+		socket.emit ('who',i);
+	} 
+});
+
+
+socket.on ('deletePlayer', function (msg) {
+	boids[i].osc.disconnect();
+	boids.splice(msg,1);
+});
 
 function getSound(){
 	var vol = mic.getLevel();
@@ -147,6 +131,11 @@ socket.on ('youare', function (data) {
 	boid.position.y = tempy;
 	boid.color = color(r,g,b);
 });
+socket.on ('theSize', function () {
+  var _docHeight = (document.height !== undefined) ? document.height : document.body.offsetHeight;
+  var _docWidth = (document.width !== undefined) ? document.width : document.body.offsetWidth;
+  socket.emit ('mySize',{mywidth: _docWidth, myheight: _docHeight});
+});  
 </script>    
 </body>
 </html>
