@@ -16,7 +16,7 @@
 	</div>
 	<p class="info">
 		Please put on your headphones!<br>
-		Music: <a href="https://soundcloud.com/pascal-seul">Pascal Seul</a><br>
+		<!-- Music: <a href="https://soundcloud.com/pascal-seul">Pascal Seul</a><br> -->
 		Code & Design: <a href="http://www.niklasbarning.de">Niklas Barning</a><br>
 		<a href="https://github.com/barning/babel">Fork me on Github</a>
 	</p>
@@ -30,19 +30,16 @@ var analyzer;
 
 
 function preload(){
-	boidCounter();
-	mySound = loadSound('audio/rats.mp3');
+	//boidCounter();
+	//mySound = loadSound('audio/rats.mp3');
 }
 
 function setup() {
   // Create an Audio input
-  for (var i = 0; i < boids.length; i++) {		
-	boids[i].osc.start();
-} 
   mic = new p5.AudioIn();
   mic.start();
-  mySound.loop();
-  mySound.setVolume(0.1);
+  //mySound.loop();
+  //mySound.setVolume(0.1);
 
   var myCanvas = createCanvas(windowWidth, windowHeight);
   myCanvas.parent('processing');
@@ -110,8 +107,8 @@ function boidCounter(){
 		var length = msg;
 		for (var i = 0; i < length; i++) {
 			boids[i] = new Boid(0,0,i );
-			//boids[i].osc.start();
-			boids[i].osc.amp(0.2);
+			boids[i].osc.amp(0.1);
+			boids[i].osc.start();
 		} 
 	});
 }
