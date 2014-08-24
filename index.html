@@ -7,6 +7,7 @@
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width">
 	<link rel="stylesheet" href="css/style.css">
+	<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
 	<script src="js/p5.js"></script>
 	<script src="js/sound.js"></script>
 
@@ -14,56 +15,76 @@
 <body>
 	<div id="processing">
 	</div>
+	<section class="name">
+		<input type='text' class='loginname' placeholder='What is your Name?'>
+		<input type='submit' class='submit' value='Submit'>
+	</section>	
 	<p class="info">
 		Please put on your headphones!<br>
-		<!-- Music: <a href="https://soundcloud.com/pascal-seul">Pascal Seul</a><br> -->
 		Code & Design: <a href="http://www.niklasbarning.de">Niklas Barning</a><br>
 		<a href="https://github.com/barning/babel">Fork me on Github</a>
 	</p>
 	<script src="socket.io/socket.io.js"></script>
+
 	<script>
-
-var socket = io();
-var boids = [];
-var input;
-var analyzer;
-
-function preload() {
-	mic = new p5.AudioIn();
- 	mic.start();
-  	mySound = loadSound('audio/underwater.mp3');
-}
-
-function setup() {
-  mySound.loop();
-  mySound.setVolume(0.5);
-
-  var myCanvas = createCanvas(windowWidth, windowHeight);
-  myCanvas.parent('processing');
-  sizeforServer();
-
-}
-
-function draw() {
-	background(44, 62, 80);
-	fill(100);
-	textAlign(CENTER);
-	fill(255);
-	noStroke();
-	
-	for (var i = 0; i < boids.length; i++) {
-		boids[i].run(boids);
+	function registerName() {
+		socket.emit('register', { name: $(".loginname").val() , email: "franz@aol.de"} );
+		console.log($(".loginname").val());
 	}
-	if (boids.length ==1){
+
+	$(document).ready( function() {
+		$(".submit").click( function() {
+			registerName();
+			$( ".name" ).fadeOut( "slow", function() {
+    			// Animation complete.
+  			});
+		});	
+	});
+	</script>
+
+
+	<script>
+	var socket = io();
+	var boids = [];
+	var input;
+	var analyzer;
+
+	function preload() {
+		mic = new p5.AudioIn();
+		mic.start();
+		mySound = loadSound('audio/underwater.mp3');
+	}
+
+	function setup() {
+		mySound.loop();
+		mySound.setVolume(0.5);
+
+		var myCanvas = createCanvas(windowWidth, windowHeight);
+		myCanvas.parent('processing');
+		sizeforServer();
+
+	}
+
+	function draw() {
+		background(44, 62, 80);
+		fill(100);
+		textAlign(CENTER);
 		fill(255);
-		textAlign(LEFT);
-		textSize(24);
-		text("You are alone.",width/2+50,height/2);
-		text("Invite a friend or wait until someone",width/2+50,height/2+30);
-		text("comes to this place.",width/2+50,height/2+60);
+		noStroke();
+
+		for (var i = 0; i < boids.length; i++) {
+			boids[i].run(boids);
+		}
+		if (boids.length ==1){
+			fill(255);
+			textAlign(LEFT);
+			textSize(24);
+			text("You are alone.",width/2+50,height/2);
+			text("Invite a friend or wait until someone",width/2+50,height/2+30);
+			text("comes to this place.",width/2+50,height/2+60);
+		}
+		getSound();
 	}
-	getSound();
-}
 
 //CLass
 function Boid(x, y,number) {
@@ -75,9 +96,11 @@ function Boid(x, y,number) {
 	this.osc.start();
 	this.osc.amp(0.2);
 
+	this.myname;
+
 	// Create a reverb input
-  	this.reverb = new p5.Reverb();
-  	this.reverb.process(this.osc, 6, 5);
+	this.reverb = new p5.Reverb();
+	this.reverb.process(this.osc, 6, 5);
 }
 
 Boid.prototype.run = function(boids) {
@@ -85,9 +108,12 @@ Boid.prototype.run = function(boids) {
 }
 
 Boid.prototype.render = function() {
-  fill(this.color);
-  ellipseMode(CENTER);
-  //text("I'm "+this.mynumber , this.position.x+60, this.position.y); 
+	fill(this.color);
+	ellipseMode(CENTER);
+	if (this.myname != undefined){
+		textSize(18);
+		text(this.myname , this.position.x+90, this.position.y+5); 
+	}
   ellipse(this.position.x, this.position.y,this.r,this.r);
   
   var loudness = map(this.r,30,80,900,1);
@@ -130,10 +156,18 @@ function getSound(){
 }
 
 function sizeforServer () {
-  var _docHeight = (document.height !== undefined) ? document.height : document.body.offsetHeight;
-  var _docWidth = (document.width !== undefined) ? document.width : document.body.offsetWidth;
-  socket.emit ('mySize',{mywidth: _docWidth, myheight: _docHeight});
+	var _docHeight = (document.height !== undefined) ? document.height : document.body.offsetHeight;
+	var _docWidth = (document.width !== undefined) ? document.width : document.body.offsetWidth;
+	socket.emit ('mySize',{mywidth: _docWidth, myheight: _docHeight});
 }  
+
+socket.on ('newName', function (data) {
+	var tempName = data.name;
+	var number = data.number;
+	console.log(tempName);
+	var theboidforname = boids[number];
+	theboidforname.myname = tempName;
+});
 
 socket.on ('mylevel', function (data) {
 	var tempName = data.name;
@@ -146,6 +180,7 @@ socket.on ('youare', function (data) {
 	tempx = data.posX;
 	tempy = data.posY;
 	tempMynumber = data.name;
+	tempMyname = data.registeredName;
 	r = data.tempr;
 	g = data.tempg;
 	b = data.tempb;
@@ -153,6 +188,7 @@ socket.on ('youare', function (data) {
 	boid.position.x = tempx;
 	boid.position.y = tempy;
 	boid.color = color(r,g,b);
+	boid.myname = tempMyname;
 });
 </script>    
 </body>

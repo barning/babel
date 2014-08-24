@@ -55,6 +55,8 @@ var h;
 function Player(socket) {
   this.socket = socket;
 
+  this.name;
+
   this.xpos;
   this.ypos;
   this.r = Math.floor(Math.random() * 255) + 100;
@@ -67,12 +69,9 @@ function Player(socket) {
 
 io.sockets.on('connection', function (socket) {
   connections.push(socket);
-
-  player = new Player(socket);
-  players.push(player);
-  console.log('We have now '+connections.length+' Connections and ' + players.length + ' Players');
-
   io.sockets.emit ('updateBoids', connections.length);
+
+  console.log('We have now '+connections.length+' Connections and ' + players.length + ' Players');
 
   socket.on('disconnect', function () {
     var id = getSocketNrById(socket.id)
@@ -83,8 +82,19 @@ io.sockets.on('connection', function (socket) {
     console.log('We have now '+connections.length+' Connections and ' + players.length + ' Players');
   });
 
+  socket.on ('register', function (data) {
+
+    var theName = data.name;
+    var theMail = data.email;
+    var pNr = getPlayerNrById(socket.id);
+
+    players[pNr].name = theName;
+    console.log('Welcome '+players[pNr].name)
+    io.sockets.emit('newName',{number: pNr, name: players[pNr].name});
+  });
+
   socket.on ('who', function (data) {
-    
+    registerPlayer();
     var theX = data.myX;
     var theY = data.myY;
 
@@ -99,7 +109,8 @@ io.sockets.on('connection', function (socket) {
 
     var xpos = players[pNr].xpos;
     var ypos = players[pNr].ypos;
-    io.sockets.emit ('youare',{name: pNr, posX: xpos, posY: ypos, tempr: red, tempg: green, tempb: blue});
+    var yourName = players[pNr].name;
+    io.sockets.emit ('youare',{name: pNr, posX: xpos, posY: ypos, tempr: red, tempg: green, tempb: blue, registeredName: yourName});
   });
 
   socket.on ('mySize', function (data) {
@@ -116,7 +127,17 @@ io.sockets.on('connection', function (socket) {
     io.sockets.emit('mylevel',{name: pNr, level: player.mySound});
   });
 
-
+  function registerPlayer() {
+    var player = getPlayerBySocket(socket);
+    if (player === undefined) {
+      player = new Player(socket);
+      players.push(player);
+    }
+    else {
+      console.log("player is already registered with socket " + player.socket.id)
+    }
+    console.log('We have now '+connections.length+' Connections and ' + players.length + ' Players');
+  }
   var removePlayerBySocketId = function(id) {
     var pNr = getPlayerNrById(id);
     if (pNr !== undefined) {
@@ -134,6 +155,10 @@ io.sockets.on('connection', function (socket) {
     }
   }
 
+  var getPlayerBySocket = function(socket) {
+    if (socket === undefined) return undefined;
+    return players[getPlayerNrById(socket.id)];
+  }
 
   var getPlayerNrById = function(id) {
     for (var i = 0; i < players.length; i++) {

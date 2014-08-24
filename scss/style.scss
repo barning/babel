@@ -9,6 +9,7 @@
 	padding: 0;
 	margin: 0;
 	background-color: #2c3e50;
+	box-sizing: border-box; 
 }
 
 #processing {
@@ -19,14 +20,44 @@
 	position: absolute;
 	bottom: 2%;
 	left: 1%;
-	color: white;
-	font-size: 1em;
 	background: transparent;
 
 	a {
 		color: white;
 		&:hover{
 			text-decoration: none;
+		}
+	}
+}
+
+.name {
+	position: absolute;
+	bottom: 2%;
+	right: 0%;
+	width: 20%;
+
+	.loginname {
+		padding: 5%;
+		border: 1px;
+		background: #34495e;
+		transition: background-color .2s;
+		outline: none;
+		&:hover {
+			background-color: lighten(#34495e,50%);
+		}
+	}
+	.submit {
+		border: 1px;
+		background: #34495e;
+		padding: 5%;
+		transition: background-color .2s;
+		transform: scale(1);
+		outline:none;
+		&:hover {
+			background-color: lighten(#34495e,50%);
+		}
+		&:active{
+			transform: scale(0.9);
 		}
 	}
 }
