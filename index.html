@@ -28,18 +28,24 @@ var boids = [];
 var input;
 var analyzer;
 
+function preload() {
+	mic = new p5.AudioIn();
+ 	mic.start();
+  	mySound = loadSound('audio/underwater.mp3');
+}
+
 function setup() {
-  // Create an Audio input
-  mic = new p5.AudioIn();
-  mic.start();
+  mySound.loop();
+  mySound.setVolume(0.5);
 
   var myCanvas = createCanvas(windowWidth, windowHeight);
   myCanvas.parent('processing');
+  sizeforServer();
 
 }
 
 function draw() {
-	background(44, 62, 80,50);
+	background(44, 62, 80);
 	fill(100);
 	textAlign(CENTER);
 	fill(255);
@@ -47,6 +53,14 @@ function draw() {
 	
 	for (var i = 0; i < boids.length; i++) {
 		boids[i].run(boids);
+	}
+	if (boids.length ==1){
+		fill(255);
+		textAlign(LEFT);
+		textSize(24);
+		text("You are alone.",width/2+50,height/2);
+		text("Invite a friend or wait until someone",width/2+50,height/2+30);
+		text("comes to this place.",width/2+50,height/2+60);
 	}
 	getSound();
 }
@@ -95,15 +109,17 @@ function playerCount (){
 socket.on ('updateBoids', function (msg) {
 	var length = msg;
 	for (var i = 0; i < length; i++) {
-		boids[i] = new Boid(0,0,i );
-		socket.emit ('who',i);
+		var x= random(50,windowWidth-50);
+		var y= random(50,windowHeight-130);
+		boids[i] = new Boid(x,y,i );
+		socket.emit ('who',{myX:x,myY: y});
 	} 
 });
 
 
 socket.on ('deletePlayer', function (msg) {
-	boids[i].osc.disconnect();
-	socket.emit ('who',msg);
+	boids[msg].osc.stop();
+	boids[msg].osc.disconnect();
 	boids.splice(msg,1);
 });
 
@@ -112,6 +128,12 @@ function getSound(){
 	var r = constrain(80-vol*80*5, 0, 80);
 	socket.emit ('mySound', r);
 }
+
+function sizeforServer () {
+  var _docHeight = (document.height !== undefined) ? document.height : document.body.offsetHeight;
+  var _docWidth = (document.width !== undefined) ? document.width : document.body.offsetWidth;
+  socket.emit ('mySize',{mywidth: _docWidth, myheight: _docHeight});
+}  
 
 socket.on ('mylevel', function (data) {
 	var tempName = data.name;
@@ -132,11 +154,6 @@ socket.on ('youare', function (data) {
 	boid.position.y = tempy;
 	boid.color = color(r,g,b);
 });
-socket.on ('theSize', function () {
-  var _docHeight = (document.height !== undefined) ? document.height : document.body.offsetHeight;
-  var _docWidth = (document.width !== undefined) ? document.width : document.body.offsetWidth;
-  socket.emit ('mySize',{mywidth: _docWidth, myheight: _docHeight});
-});  
 </script>    
 </body>
 </html>

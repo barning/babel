@@ -55,8 +55,8 @@ var h;
 function Player(socket) {
   this.socket = socket;
 
-  this.xpos = Math.floor(Math.random() * w)+50;
-  this.ypos = Math.floor(Math.random() * h) +0;
+  this.xpos;
+  this.ypos;
   this.r = Math.floor(Math.random() * 255) + 100;
   this.g = Math.floor(Math.random() * 255) + 100;
   this.b = Math.floor(Math.random() * 255) + 100;
@@ -67,34 +67,38 @@ function Player(socket) {
 
 io.sockets.on('connection', function (socket) {
   connections.push(socket);
-  io.sockets.emit ('theSize');
-  io.sockets.emit ('updateBoids', connections.length);
 
   player = new Player(socket);
   players.push(player);
   console.log('We have now '+connections.length+' Connections and ' + players.length + ' Players');
 
+  io.sockets.emit ('updateBoids', connections.length);
+
   socket.on('disconnect', function () {
     var id = getSocketNrById(socket.id)
-
+    io.sockets.emit ('deletePlayer',id);
     removeConnectionById(socket.id);
     removePlayerBySocketId(socket.id);
 
     console.log('We have now '+connections.length+' Connections and ' + players.length + ' Players');
-
-    io.sockets.emit ('deletePlayer');
-    io.sockets.emit ('updateBoids', connections.length);
   });
 
-  socket.on ('who', function (msg) {
+  socket.on ('who', function (data) {
+    
+    var theX = data.myX;
+    var theY = data.myY;
+
     var color = [];
     var pNr = getPlayerNrById(socket.id);
-    var xpos = players[pNr].xpos;
-    var ypos = players[pNr].ypos;
     var red = players[pNr].r;
     var green = players[pNr].g;
     var blue = players[pNr].b;
 
+    players[pNr].xpos = theX;
+    players[pNr].ypos = theY;
+
+    var xpos = players[pNr].xpos;
+    var ypos = players[pNr].ypos;
     io.sockets.emit ('youare',{name: pNr, posX: xpos, posY: ypos, tempr: red, tempg: green, tempb: blue});
   });
 
@@ -113,39 +117,39 @@ io.sockets.on('connection', function (socket) {
   });
 
 
-var removePlayerBySocketId = function(id) {
-  var pNr = getPlayerNrById(id);
-  if (pNr !== undefined) {
-    var player = players[pNr];
-    player.mySound = 0;
-    players.splice(pNr,1);
-  }
-}
-
-var removeConnectionById = function(id) {
-  var sNr = getSocketNrById(id);
-  if (sNr !== undefined) {
-    connections.splice(sNr,1);
-    console.log('Connection "' + id + '" was removed.');
-  }
-}
-
-
-var getPlayerNrById = function(id) {
-  for (var i = 0; i < players.length; i++) {
-    if(id == players[i].socket.id) {
-      return i;
+  var removePlayerBySocketId = function(id) {
+    var pNr = getPlayerNrById(id);
+    if (pNr !== undefined) {
+      var player = players[pNr];
+      player.mySound = 0;
+      players.splice(pNr,1);
     }
   }
-}
 
-var getSocketNrById = function(id) {
-  for (var i = 0; i < connections.length; i++) {
-    if(id == connections[i].id) {
-      return i;
+  var removeConnectionById = function(id) {
+    var sNr = getSocketNrById(id);
+    if (sNr !== undefined) {
+      connections.splice(sNr,1);
+      console.log('Connection "' + id + '" was removed.');
     }
   }
-}
+
+
+  var getPlayerNrById = function(id) {
+    for (var i = 0; i < players.length; i++) {
+      if(id == players[i].socket.id) {
+        return i;
+      }
+    }
+  }
+
+  var getSocketNrById = function(id) {
+    for (var i = 0; i < connections.length; i++) {
+      if(id == connections[i].id) {
+        return i;
+      }
+    }
+  }
 
 });
 server.listen(4897, function(){
