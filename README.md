@@ -1,7 +1,11 @@
 babel
 =====
 
-Babel is a web app that abstracts verbal communication. Visitors are shown as circles.
+The project is inspired by the <a href="http://en.wikipedia.org/wiki/Tower_of_Babel">Tower of Babel</a>.
+
+Once upon a time, all people on earth understood each other. But their language was confounded.
+
+This web app is symbolising the meaning of the Tower of Babel. Everyone is represented by an bubble, which pulsates and beeps. Even if you and other visitors speaking the same language, no one would ever understand what you are saying.
 
 Please put on your headphones, or the audiosignal will be disturbed.
 

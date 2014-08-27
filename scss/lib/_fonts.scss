@@ -1,9 +1,26 @@
 @import url(http://fonts.googleapis.com/css?family=Roboto);
 
-.info,.name {
+.info,.name,#about {
 	font-family: 'Roboto', sans-serif;
 	color: white;
 	font-size: 1em;
+}
+
+#about { 
+	p {
+		line-height: 1.5em;
+		letter-spacing: 0.02em;
+		margin-top: 3%;
+	}
+	a {
+		color: white;
+		background: none;
+	}
+}
+
+h2 {
+	font-size: 2em;
+	line-height: 1.2em;
 }
 
 textarea:focus, input:focus {
@@ -11,5 +28,5 @@ textarea:focus, input:focus {
 }
 
 input, select, textarea{
-    color: white;
+	color: white;
 }

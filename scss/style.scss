@@ -16,6 +16,39 @@
 
 }
 
+#about {
+	position: absolute;
+	background: rgba(0, 0, 0, 0.8);
+	width: 100%;
+	height: 100%;
+	top: 0;
+	z-index: 3;
+	display: none;
+	section {
+		position: absolute;
+		background: none !important;
+		top: 5%;
+		width: 400px;
+		left: 50%;
+		margin-left: -200px;
+		article,h2,p {
+			background: none !important;
+			img {
+				max-width: 400px;
+			}
+		}
+		h2 {
+			margin-bottom: 3%;
+		}
+		i {
+			font-size: 10em;
+			background: none;
+			padding-left: 27%;
+			padding-top: 6%;
+		}
+	}
+}
+
 .info {
 	position: absolute;
 	bottom: 2%;

@@ -17,10 +17,22 @@
   /* Internet Explorer 10+ */
   color: #fff; }
 
-.info, .name {
+.info, .name, #about {
   font-family: 'Roboto', sans-serif;
   color: white;
   font-size: 1em; }
+
+#about p {
+  line-height: 1.5em;
+  letter-spacing: 0.02em;
+  margin-top: 3%; }
+#about a {
+  color: white;
+  background: none; }
+
+h2 {
+  font-size: 2em;
+  line-height: 1.2em; }
 
 textarea:focus, input:focus {
   color: white; }
@@ -33,6 +45,33 @@ input, select, textarea {
   margin: 0;
   background-color: #2c3e50;
   box-sizing: border-box; }
+
+#about {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.8);
+  width: 100%;
+  height: 100%;
+  top: 0;
+  z-index: 3;
+  display: none; }
+  #about section {
+    position: absolute;
+    background: none !important;
+    top: 5%;
+    width: 400px;
+    left: 50%;
+    margin-left: -200px; }
+    #about section article, #about section h2, #about section p {
+      background: none !important; }
+      #about section article img, #about section h2 img, #about section p img {
+        max-width: 400px; }
+    #about section h2 {
+      margin-bottom: 3%; }
+    #about section i {
+      font-size: 10em;
+      background: none;
+      padding-left: 27%;
+      padding-top: 6%; }
 
 .info {
   position: absolute;
