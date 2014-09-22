@@ -11,7 +11,7 @@ Please put on your headphones, or the audiosignal will be disturbed.
 
 **Start server locally:** `node index.js`
 
-It's build with [Node.js](http://nodejs.org/), [Socket.io](http://socket.io/) and [P5.js](http://p5js.org/).
+It's build with [Node.js](http://nodejs.org/), [Socket.io](http://socket.io/), [Particleground](http://jnicol.github.io/particleground/) and [P5.js](http://p5js.org/).
 
 ##Screenshot
 ![image](./img/screenshot.png)

@@ -11,11 +11,14 @@
 	<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
 	<script src="js/p5.js"></script>
 	<script src="js/sound.js"></script>
+	<script src="js/jquery.particleground.min.js"></script>
 
 </head>
 <body>
 	<div id="processing">
 	</div>
+<div id="background">
+</div>
 	<div id="about">
 		<section>
 			<article>
@@ -30,7 +33,7 @@
 	<section class="name">
 		<input type='text' class='loginname' placeholder='What is your Name?'>
 		<input type='submit' class='submit' value='Submit'>
-	</section>	
+	</section>
 	<p class="info">
 		Please put on your headphones!<br>
 		<a  class="what" href="#">What is this?</a><br>
@@ -46,12 +49,13 @@
 	}
 
 	$(document).ready( function() {
+
 		$(".submit").click( function() {
 			registerName();
 			$( ".name" ).fadeOut( "slow", function() {
 			// Animation complete.
 			});
-		});	
+		});
 		$(".what").click( function() {
 			$( "#about" ).fadeIn( "slow", function() {
 			});
@@ -59,7 +63,7 @@
 		$("#about").click( function() {
 			$( "#about" ).fadeOut( "slow", function() {
 			});
-		});	
+		});
 	});
 	</script>
 
@@ -83,11 +87,21 @@
 		var myCanvas = createCanvas(windowWidth, windowHeight);
 		myCanvas.parent('processing');
 		sizeforServer();
+		$('#background').particleground({
+		dotColor: '#374F66',
+		lineColor: '#374F66',
+		particleRadius: 25,
+		parallaxMultiplier: 30,
+		density: 35000,
+		curvedLines: true,
+		proximity: 150
+		});
 
 	}
 
 	function draw() {
-		background(44, 62, 80);
+		clear();
+		//background(44, 62, 80);
 		fill(100);
 		textAlign(CENTER);
 		fill(255);
@@ -133,7 +147,7 @@ Boid.prototype.render = function() {
 	ellipseMode(CENTER);
 	if (this.myname != undefined){
 		textSize(18);
-		text(this.myname , this.position.x+90, this.position.y+5); 
+		text(this.myname , this.position.x+90, this.position.y+5);
 	}
 	ellipse(this.position.x, this.position.y,this.r,this.r);
 
@@ -160,7 +174,7 @@ socket.on ('updateBoids', function (msg) {
 		var y= random(50,windowHeight-130);
 		boids[i] = new Boid(x,y,i );
 		socket.emit ('who',{myX:x,myY: y});
-	} 
+	}
 });
 
 
@@ -180,7 +194,7 @@ function sizeforServer () {
 	var _docHeight = (document.height !== undefined) ? document.height : document.body.offsetHeight;
 	var _docWidth = (document.width !== undefined) ? document.width : document.body.offsetWidth;
 	socket.emit ('mySize',{mywidth: _docWidth, myheight: _docHeight});
-}  
+}
 
 socket.on ('newName', function (data) {
 	var tempName = data.name;
@@ -211,6 +225,6 @@ socket.on ('youare', function (data) {
 	boid.color = color(r,g,b);
 	boid.myname = tempMyname;
 });
-</script>    
+</script>
 </body>
 </html>
