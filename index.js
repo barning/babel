@@ -3,10 +3,8 @@ var path = require('path');
 var socketIO = require('socket.io');
 
 var PORT = process.env.PORT || 3000;
-const INDEX = path.join(__dirname, 'index.html');
 
 var server = express()
-  .use((req, res) => res.sendFile(INDEX))
   .use(express.static(__dirname + '/'))
   .listen(PORT, () => console.log(`Listening on ${ PORT }`));
 
@@ -25,16 +23,18 @@ io.on('connection', function(socket){
 This is the Player Class
 ------------------------
 */
-function Player(socket) {
-  this.socket = socket;
-  this.name;
-  this.xpos;
-  this.ypos;
-  //Set a random color
-  this.r = Math.floor(Math.random() * 255) + 100;
-  this.g = Math.floor(Math.random() * 255) + 100;
-  this.b = Math.floor(Math.random() * 255) + 100;
-  this.mySound;
+class Player {
+  constructor(socket) {
+    this.socket = socket;
+    this.name;
+    this.xpos;
+    this.ypos;
+    //Set a random color
+    this.r = Math.floor(Math.random() * 255) + 100;
+    this.g = Math.floor(Math.random() * 255) + 100;
+    this.b = Math.floor(Math.random() * 255) + 100;
+    this.mySound;
+  }
 }
 
 io.sockets.on('connection', function (socket) { //Someone connects…
@@ -53,7 +53,6 @@ io.sockets.on('connection', function (socket) { //Someone connects…
 
   socket.on ('register', function (data) { //Someone register…
     var theName = data.name; //…get the name variable
-    var theMail = data.email; //… get the email variable
     var pNr = getPlayerNrById(socket.id); //… get the playernumber by his ID
 
     players[pNr].name = theName; // Set the Playername from the name variable
