@@ -86,10 +86,7 @@ let sketch = function (p) {
             this.osc.pan(panning);
             this.osc.freq(loudness); //Insert Loudness into the frequency
 
-            p.ellipse(this.position.x, this.position.y, this.r, this.r);
-            
-            console.log(this.r);
-            
+            p.ellipse(this.position.x, this.position.y, this.r, this.r);            
         }
     }
 
@@ -161,8 +158,6 @@ let sketch = function (p) {
     socket.on('newName', function (data) {
         var tempName = data.name;
         var number = data.number;
-        console.log(tempName);
-        console.log(number);
         
         var theboidforname = boids[number];
         theboidforname.myname = tempName;
@@ -200,3 +195,18 @@ let sketch = function (p) {
 };
 
 let myp5 = new p5(sketch);
+
+var what = document.querySelectorAll('.what');
+
+for (let i = 0; i < what.length; i++) {
+    what[i].addEventListener('click', show);
+}
+
+function show() {
+    var about = document.querySelector('#about');
+    if (about.style.display === 'block') {
+        about.style.display = "none"; 
+    } else {
+        about.style.display = "block";
+    }
+}
