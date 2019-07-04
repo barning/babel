@@ -1,21 +1,17 @@
 var express = require('express')
-,   app = express()
-,   server = require('http').createServer(app)
+var path = require('path');
+var socketIO = require('socket.io');
 
-server.listen(3000, function(){
-  console.log('listening on *:3000');
-});
+var PORT = process.env.PORT || 3000;
+const INDEX = path.join(__dirname, 'index.html');
 
-app.use(express.static(__dirname + '/'));
-
-// wenn der Pfad / aufgerufen wird
-app.get('/', function (req, res) {
-	// so wird die Datei index.html ausgegeben
-	res.sendfile(__dirname + '/index.html');
-});
+var server = express()
+  .use((req, res) => res.sendFile(INDEX))
+  .use(express.static(__dirname + '/'))
+  .listen(PORT, () => console.log(`Listening on ${ PORT }`));
 
 
-var io = require('socket.io').listen(server);
+var io = socketIO(server);
 var players = [];
 var connections = [];
 var w;
