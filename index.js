@@ -56,7 +56,8 @@ io.sockets.on('connection', function (socket) { //Someone connects…
     var pNr = getPlayerNrById(socket.id); //… get the playernumber by his ID
 
     players[pNr].name = theName; // Set the Playername from the name variable
-    console.log('Welcome '+players[pNr].name)
+    console.log('Welcome '+players[pNr].name);
+    io.sockets.emit('reset');
     io.sockets.emit('newName',{number: pNr, name: players[pNr].name}); //tell everyone the name of the player
   });
 
