@@ -3,47 +3,61 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-	<title>Babel</title>
-	<meta name="description" content="">
+	<title>Babel — a room of voices</title>
+	<meta name="description" content="An ambient, anonymous experiment about language and distance.">
 	<meta name="viewport" content="width=device-width">
+	<meta name="theme-color" content="#090d1c">
 	<link rel="stylesheet" href="css/style.css">
 	<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
 	<script src="socket.io/socket.io.js"></script>
-	<script src="js/jquery.js"></script>
-	<script src="js/p5.js"></script>
-	<script src="js/p5.sound.js"></script>
-	<script src="js/jquery.particleground.min.js"></script>
 </head>
 <body>
 	<div id="processing">
 	</div>
 	<div id="background">
 	</div>
-	<div id="about">
+	<div class="vignette" aria-hidden="true"></div>
+	<div id="about" role="dialog" aria-modal="true" aria-label="About Babel">
 		<section>
 			<article>
-				<h2>Hah, thought you woud never ask!</h2>
+				<p class="eyebrow">ABOUT THE EXPERIENCE</p>
+				<h2>A room full of voices.</h2>
 				<p>The project is inspired by the <a href="http://en.wikipedia.org/wiki/Tower_of_Babel">Tower of Babel</a>.</p>
 				<p>Once upon a time, all people on earth understood each other. But their language was confounded.</p>
 				<p>This web app is symbolising the meaning of the Tower of Babel.
-					 Everyone is represented by an bubble, which pulsates and beeps.
+					 Everyone is represented by a bubble, which pulsates and beeps.
 					 Even if you and other visitors speaking the same language, no one
 					 would ever understand what you are saying.</p>
+				<p class="privacy">Your microphone is used only to shape your sound. No audio is recorded or stored.</p>
 				<i class="fa fa-comments-o"></i>
-				<center><a class="what" href="">Close</a></center>
+				<center><a class="what" href="#">Close</a></center>
 			</article>
 		</section>
 	</div>
+	<header class="brand" aria-label="Babel">
+		<span class="brand-mark" aria-hidden="true"></span>
+		<span>Babel</span>
+		<span class="brand-detail">/ 2026</span>
+	</header>
+	<div class="status" aria-live="polite"><span class="status-dot"></span><span>Listening for strangers</span></div>
+	<section class="intro">
+		<p class="eyebrow">AN ONLINE SOUND INSTALLATION</p>
+		<h1>Can you hear<br><em>someone</em>?</h1>
+		<p class="intro-copy">Every visitor becomes a signal.<br>Every signal becomes a stranger.</p>
+	</section>
 	<section class="name">
-		<input type='text' class='loginname' placeholder='What is your Name?'>
-		<input type='submit' class='submit' value='Submit'>
+		<label for="login-name">Choose a name to enter</label>
+		<div class="name-row">
+			<input id="login-name" type='text' class='loginname' placeholder='your name' maxlength="24" autocomplete="nickname">
+			<input type='submit' class='submit' value='Enter'>
+		</div>
+		<p class="mic-note">Headphones recommended · microphone access required</p>
 	</section>
 	<p class="info">
-		Please put on your headphones!<br>
-		<a class="what" href="#">What is this?</a><br>
-		Code & Design: <a href="http://www.niklasbarning.de">Niklas Barning</a><br>
-		<a href="https://github.com/barning/babel">Fork me on Github</a>
+		<a class="what" href="#">About Babel</a><br>
+		<span>Code &amp; design by <a href="http://www.niklasbarning.de">Niklas Barning</a></span><br>
+		<a href="https://github.com/barning/babel">View source on Github</a>
 	</p>
-	<script src="js/sketch.js"></script>
+	<script type="module" src="js/main.js"></script>
 </body>
 </html>
